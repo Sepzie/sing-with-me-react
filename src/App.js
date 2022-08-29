@@ -1,18 +1,22 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-const bonesInTheOcean = require("./res/bones_in_the_ocean.mp3");
+
 
 
 class Song extends React.Component {
-  redner() {
-    let path = "./res/bones_in_the_ocean.mp3";
+  render() {
+    let path = "./bones_in_the_ocean.mp3";
     let audio = new Audio(path);
-    audioPlayer = (
+    let audioPlayer = (
       <div className="Song">
-        <button  onClick={() => audio.play()}>Soundclip!</button>
+        <audio controls>
+          <source src="./bones_in_the_ocean.mp3" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
     );
+    return audioPlayer
   }
 }
 
@@ -50,6 +54,7 @@ function App() {
   return (
     <div className="App">
       <Lines className="Lines" lyrics={LYRICS} />
+      <Song className="Song" />
     </div>
   );
 }
