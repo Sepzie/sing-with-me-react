@@ -1,38 +1,100 @@
 import logo from './logo.svg';
+import song from './res/bones_in_the_ocean.mp3'
 import './App.css';
 import React from 'react';
+import { Howl, Howler } from 'howler';
 
+function timeTagToMs(timeTag) {
+  let minutes = parseInt(timeTag.slice(0, 2));
+  let seconds = parseInt(timeTag.slice(3, 5));
+  let centiSeconds = parseInt(timeTag.slice(6, 8));
+  return minutes * 60000 + seconds * 1000 + centiSeconds * 10;
+}
 
+ function getSprites () {
+  let sprites = {};
+  for (const [index, line] of LYRICS.slice(0, -1).entries()) {
+    sprites['section' + index] = [
+      timeTagToMs(line.timeTag),
+      timeTagToMs(LYRICS[index + 1].timeTag) - timeTagToMs(line.timeTag)];
+  }
+  sprites['section' + (LYRICS.length - 1)] = [timeTagToMs(LYRICS[LYRICS.length - 1].timeTag)];
+  return sprites;
+}
 
 class Song extends React.Component {
+  constructor(props) {
+    super(props)
+    var sprites = getSprites();
+    console.log(sprites);
+    var sound = new Howl({
+      src: [song],
+      sprite: sprites
+    });
+
+    this.state = {
+      sound: sound,
+      section: 0,
+    }
+  }
+
+
+  playSong() {
+    this.state.sound.play('section' + this.state.section);
+    this.setState({
+      section: this.state.section + 1
+    })
+  }
+
   render() {
-    let path = "./bones_in_the_ocean.mp3";
-    let audio = new Audio(path);
     let audioPlayer = (
       <div className="Song">
-        <audio controls>
-          <source src="./bones_in_the_ocean.mp3" type="audio/mpeg" />
-          Your browser does not support the audio element.
-        </audio>
+        <button onClick={this.playSong.bind(this)}>
+          Play
+        </button>
+        <button>
+          Seek
+        </button>
       </div>
     );
     return audioPlayer
   }
 }
 
+class Recorder extends React.Component {
+  render() {
+    return <section></section>
+  }
+}
+
 class Line extends React.Component {
   constructor(props) {
     super(props)
-
   }
 
   render() {
-    return <p>{this.props.text}</p>
+    return <div>
+            <p onClick={this.props.onClick}>{this.props.text}</p>
+            <Recorder />
+            </div>
   }
 }
 
 class Lines extends React.Component {
+  constructor(props) {
+    super(props)
+    var sprites = getSprites();
+    console.log(sprites);
+    var sound = new Howl({
+      src: [song],
+      sprite: sprites
+    });
 
+    this.state = {
+      sound: sound,
+      section: 0,
+    }
+  }
 
   render() {
     const lyrics = LYRICS
@@ -40,8 +102,11 @@ class Lines extends React.Component {
 
     lyrics.forEach((lyric, lineNumber) => {
       lines.push(
-        <Line text={lyric.text} key={lineNumber} />
-
+        <Line
+          text={lyric.text}
+          key={lineNumber}
+          onClick={() => this.state.sound.play('section' + lineNumber)}
+        />
       )
     });
 
@@ -49,7 +114,6 @@ class Lines extends React.Component {
   }
 }
 
-const square = (x) => { return x * x }
 function App() {
   return (
     <div className="App">
