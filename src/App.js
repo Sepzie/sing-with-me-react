@@ -3,7 +3,14 @@ import song from './res/bones_in_the_ocean.mp3'
 import './App.css';
 import React from 'react';
 import { Howl, Howler } from 'howler';
+import { Recorder } from 'react-voice-recorder'
+import 'react-voice-recorder/dist/index.css'
 
+/**
+ * Converts a timetag to miliseconds.
+ * @param {*} timeTag timetag in MM:SS:CS format as a string
+ * @returns miliseconds as a number
+ */
 function timeTagToMs(timeTag) {
   let minutes = parseInt(timeTag.slice(0, 2));
   let seconds = parseInt(timeTag.slice(3, 5));
@@ -11,7 +18,11 @@ function timeTagToMs(timeTag) {
   return minutes * 60000 + seconds * 1000 + centiSeconds * 10;
 }
 
- function getSprites () {
+/**
+ * Generates Howler sprites for each section of the song based on the lyrics timestamp
+ * @returns Howler sprite object
+ */
+function generateSprites() {
   let sprites = {};
   for (const [index, line] of LYRICS.slice(0, -1).entries()) {
     sprites['section' + index] = [
@@ -22,68 +33,115 @@ function timeTagToMs(timeTag) {
   return sprites;
 }
 
-class Song extends React.Component {
+/**
+ * Voice recorder - work in progress... plz help
+ */
+class VoiceRecorder extends React.Component {
   constructor(props) {
-    super(props)
-    var sprites = getSprites();
-    console.log(sprites);
-    var sound = new Howl({
-      src: [song],
-      sprite: sprites
-    });
-
+    super(props);
     this.state = {
-      sound: sound,
-      section: 0,
+      audioDetails: {
+        url: null,
+        blob: null,
+        chunks: null,
+        duration: {
+          h: null,
+          m: null,
+          s: null,
+        }
+      }
     }
   }
 
+  handleAudioStop(data) {
+    console.log(data)
+    this.setState({ audioDetails: data });
+  }
 
-  playSong() {
-    this.state.sound.play('section' + this.state.section);
-    this.setState({
-      section: this.state.section + 1
-    })
+  handleAudioUpload(file) {
+    console.log(file);
+  }
+
+  handleReset() {
+    const reset = {
+      url: null,
+      blob: null,
+      chunks: null,
+      duration: {
+        h: null,
+        m: null,
+        s: null,
+      }
+    }
+    this.setState({ audioDetails: reset });
   }
 
   render() {
-    let audioPlayer = (
-      <div className="Song">
-        <button onClick={this.playSong.bind(this)}>
-          Play
-        </button>
-        <button>
-          Seek
-        </button>
-      </div>
-    );
-    return audioPlayer
+    return <Recorder
+      record={true}
+      title={"New recording"}
+      audioURL={this.state.audioDetails.url}
+      showUIAudio
+      handleAudioStop={data => this.handleAudioStop(data)}
+      handleOnChange={(value) => this.handleOnChange(value, 'firstname')}
+      handleAudioUpload={data => this.handleAudioUpload(data)}
+      handleReset={() => this.handleReset()}
+    />
   }
 }
 
-class Recorder extends React.Component {
-  render() {
-    return <section></section>
-  }
-}
 
+/**
+ * One line of the lyrics
+ * Each line has text, and plays the audio for the line when clicked.
+ * TO DO: Add a voice recorder next to the lyrics in each song
+ */
 class Line extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      color: 'black'
+    };
+  }
+
+  /**
+   * Handle what happens when a line is clicked
+   * Plays the Howler sprite that corresponds to this line and changes the line color for a second.
+   */
+  processClick() {
+    var sound = this.props.sound
+    var section = 'section' + this.props.lineNumber
+    sound.play(section)
+    setTimeout(() => this.setState({ color: 'black' }), 1000);
+    // console.log(sound.duration(this.props.lineNumber));
+    this.setState({
+      color: 'green'
+    });
   }
 
   render() {
-    return <div>
-            <p onClick={this.props.onClick}>{this.props.text}</p>
-            <Recorder />
-            </div>
+    return (
+      <div>
+        <p
+          style={{ color: this.state.color }}
+          onClick={this.processClick.bind(this)}
+        >
+          {this.props.text}
+        </p>
+        {/* <Recorder /> */}
+      </div>
+    )
   }
 }
 
+/**
+ * The lines of the lyrics.
+ * Contains all the lines and the sound state that is shared between the lines.
+ */
 class Lines extends React.Component {
   constructor(props) {
     super(props)
-    var sprites = getSprites();
+    var sprites = generateSprites();
     console.log(sprites);
     var sound = new Howl({
       src: [song],
@@ -106,6 +164,8 @@ class Lines extends React.Component {
           text={lyric.text}
           key={lineNumber}
           onClick={() => this.state.sound.play('section' + lineNumber)}
+          sound={this.state.sound}
+          lineNumber={lineNumber}
         />
       )
     });
@@ -114,11 +174,14 @@ class Lines extends React.Component {
   }
 }
 
+/**
+ * App
+ */
 function App() {
   return (
     <div className="App">
       <Lines className="Lines" lyrics={LYRICS} />
-      <Song className="Song" />
+      {/* <VoiceRecorder /> */}
     </div>
   );
 }
