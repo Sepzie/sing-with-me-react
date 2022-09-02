@@ -3,8 +3,7 @@ import song from './res/bones_in_the_ocean.mp3'
 import './App.css';
 import React from 'react';
 import { Howl, Howler } from 'howler';
-import { Recorder } from 'react-voice-recorder'
-import 'react-voice-recorder/dist/index.css'
+import { ReactMediaRecorder } from "react-media-recorder";
 
 /**
  * Converts a timetag to miliseconds.
@@ -36,57 +35,41 @@ function generateSprites() {
 /**
  * Voice recorder - work in progress... plz help
  */
-class VoiceRecorder extends React.Component {
+class RecordView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      audioDetails: {
-        url: null,
-        blob: null,
-        chunks: null,
-        duration: {
-          h: null,
-          m: null,
-          s: null,
-        }
-      }
-    }
+      recording : false}
   }
 
-  handleAudioStop(data) {
-    console.log(data)
-    this.setState({ audioDetails: data });
-  }
-
-  handleAudioUpload(file) {
-    console.log(file);
-  }
-
-  handleReset() {
-    const reset = {
-      url: null,
-      blob: null,
-      chunks: null,
-      duration: {
-        h: null,
-        m: null,
-        s: null,
-      }
-    }
-    this.setState({ audioDetails: reset });
+  processClick(startRecording, stopRecording) {
+    let recording = this.state.recording;
+    recording? stopRecording() : startRecording();
+    this.setState(
+      {recording: !recording}
+    );
   }
 
   render() {
-    return <Recorder
-      record={true}
-      title={"New recording"}
-      audioURL={this.state.audioDetails.url}
-      showUIAudio
-      handleAudioStop={data => this.handleAudioStop(data)}
-      handleOnChange={(value) => this.handleOnChange(value, 'firstname')}
-      handleAudioUpload={data => this.handleAudioUpload(data)}
-      handleReset={() => this.handleReset()}
-    />
+    return (
+      <div>
+        <ReactMediaRecorder
+          audio
+          blobPropertyBag={{type: "audio/wav"}}
+          render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+            <div>
+              <p>{status}</p>
+              <button
+                onClick={() => this.processClick(startRecording, stopRecording)}
+              >
+                {this.state.recording? 'Stop Recording': 'Start Recording'}
+              </button>
+              <audio src={mediaBlobUrl} controls autoPlay />
+            </div>
+          )}
+        />
+      </div>
+    )
   }
 }
 
@@ -113,7 +96,6 @@ class Line extends React.Component {
     var section = 'section' + this.props.lineNumber
     sound.play(section)
     setTimeout(() => this.setState({ color: 'black' }), 1000);
-    // console.log(sound.duration(this.props.lineNumber));
     this.setState({
       color: 'green'
     });
@@ -128,7 +110,7 @@ class Line extends React.Component {
         >
           {this.props.text}
         </p>
-        {/* <Recorder /> */}
+        <RecordView  />
       </div>
     )
   }
@@ -142,7 +124,6 @@ class Lines extends React.Component {
   constructor(props) {
     super(props)
     var sprites = generateSprites();
-    console.log(sprites);
     var sound = new Howl({
       src: [song],
       sprite: sprites
@@ -181,7 +162,6 @@ function App() {
   return (
     <div className="App">
       <Lines className="Lines" lyrics={LYRICS} />
-      {/* <VoiceRecorder /> */}
     </div>
   );
 }
