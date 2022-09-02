@@ -1,9 +1,10 @@
 import logo from './logo.svg';
 import song from './res/bones_in_the_ocean.mp3'
 import './App.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { Howl, Howler } from 'howler';
 import { ReactMediaRecorder } from "react-media-recorder";
+import { useReactMediaRecorder } from "react-media-recorder";
 
 /**
  * Converts a timetag to miliseconds.
@@ -32,46 +33,27 @@ function generateSprites() {
   return sprites;
 }
 
-/**
- * Voice recorder - work in progress... plz help
- */
-class RecordView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      recording : false}
-  }
 
-  processClick(startRecording, stopRecording) {
-    let recording = this.state.recording;
+const RecordView = () => {
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+    useReactMediaRecorder({ audio: true });
+  const [recording, setRecording] = useState(false);
+
+  function processClick() {
     recording? stopRecording() : startRecording();
-    this.setState(
-      {recording: !recording}
-    );
+    setRecording(!recording);
   }
 
-  render() {
-    return (
-      <div>
-        <ReactMediaRecorder
-          audio
-          blobPropertyBag={{type: "audio/wav"}}
-          render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
-            <div>
-              <p>{status}</p>
-              <button
-                onClick={() => this.processClick(startRecording, stopRecording)}
-              >
-                {this.state.recording? 'Stop Recording': 'Start Recording'}
-              </button>
-              <audio src={mediaBlobUrl} controls autoPlay />
-            </div>
-          )}
-        />
-      </div>
-    )
-  }
-}
+  return (
+    <div>
+      <p>{status}</p>
+      <button onClick={processClick}>
+        {recording? 'Stop Recording' : 'Start Recording'}
+      </button>
+      <audio src={mediaBlobUrl} controls autoPlay />
+    </div>
+  );
+};
 
 
 /**
@@ -86,12 +68,12 @@ class Line extends React.Component {
       color: 'black'
     };
   }
-
+  
   /**
    * Handle what happens when a line is clicked
    * Plays the Howler sprite that corresponds to this line and changes the line color for a second.
    */
-  processClick() {
+  processClick = () => {
     var sound = this.props.sound
     var section = 'section' + this.props.lineNumber
     sound.play(section)
@@ -106,11 +88,11 @@ class Line extends React.Component {
       <div>
         <p
           style={{ color: this.state.color }}
-          onClick={this.processClick.bind(this)}
+          onClick={this.processClick}
         >
           {this.props.text}
         </p>
-        <RecordView  />
+        <RecordView />
       </div>
     )
   }
@@ -162,6 +144,7 @@ function App() {
   return (
     <div className="App">
       <Lines className="Lines" lyrics={LYRICS} />
+
     </div>
   );
 }
