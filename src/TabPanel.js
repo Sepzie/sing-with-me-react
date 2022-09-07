@@ -4,6 +4,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Lines from './SingWithMe';
+import LyricsEditor from './LyricsEditor';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -39,8 +41,9 @@ function a11yProps(index) {
 }
 
 export default function BasicTabs(props) {
-    const {tab1, tab2} = props
+    const { tab1, tab2 } = props
     const [value, setValue] = React.useState(0);
+    const [linesData, setLinesData] = React.useState({})
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -55,10 +58,10 @@ export default function BasicTabs(props) {
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                {tab1}
+                <Lines className="Lines" linesData={linesData} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                {tab2}
+                <LyricsEditor className="LyricsEditor" setLinesData={setLinesData} />
             </TabPanel>
             <TabPanel value={value} index={2}>
                 Item Three

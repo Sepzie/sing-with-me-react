@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import raw from './res/The Longest Johns - Bones in the Ocean.lrc'
+
 
 
 async function getNewFileHandle() {
@@ -19,6 +21,7 @@ async function getNewFileHandle() {
     ],
   };
   const handle = await window.showSaveFilePicker(options);
+
   return handle
 }
 
@@ -39,35 +42,39 @@ async function readFile() {
 }
 
 
-function processLyrics(rawLyrics) {
-  let regex = /((?<start>^\[)|\[)(?<minutes>0?[0-9]|[1-5][0-9]):(?<seconds>0?[0-9]|[1-5][0-9])(\.(?<fraction>[0-9]*))\]/gm;
-  console.log(regex.exec(rawLyrics));
-  let match = regex.exec(rawLyrics);
-  while (match != null) {
-    // matched text: match[0]
-    // match start: match.index
-    // capturing group n: match[n]
-    let result = ""
-    if (match.groups.start) {
-      result += 'start: ';
-    } else {
-      result += 'end: ';
-    }
-    result += match.groups.minutes + " " + match.groups.seconds + ' ' + match.groups.fraction;
-    console.log(result)
-    match = regex.exec(rawLyrics);
-  }
+function processLyrics(rawLyrics = '') {
+  const regex = /^\[(?<minutes>0?[0-9]|[1-5][0-9]):(?<seconds>(0?[0-9]|[1-5][0-9])\.[0-9]*)\](?<text>.*)/
+  let linesData = []
+
+  rawLyrics
+    .split('\n')
+    .forEach((line) => {
+      if (regex.test(line)) {
+        const match = regex.exec(line)
+        const minutes = parseInt(match.groups.minutes)
+        const seconds = parseFloat(match.groups.seconds)
+        const startTime = minutes * 60000 + seconds * 1000
+        const text = match.groups.text
+        linesData.push({
+          startTime: startTime,
+          text: text
+        })
+      }
+    });
+
+  return linesData
 }
 
 
 
-class EditText extends React.Component {
+class LyricsEditor extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      value: 'prefilled text',
+      value: '',
       fileHandle: null
-    };
+    }
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -81,13 +88,14 @@ class EditText extends React.Component {
 
   }
 
-  handleSubmit(event) {
-    processLyrics(this.state.value)
-    event.preventDefault();
+
+
+  preLoad() {
+    fetch(raw).then(response => response.text()).then(text => this.setState({ value: text }))
   }
 
   async load() {
-    var [fileHandle, contents] = await readFile()
+    const [fileHandle, contents] = await readFile()
     console.log(contents)
     this.setState({
       fileHandle: fileHandle,
@@ -103,8 +111,7 @@ class EditText extends React.Component {
 
 
   saveAs() {
-    var handle = getNewFileHandle()
-    handle.then((result) => {
+    getNewFileHandle().then((result) => {
       writeFile(result, this.state.value)
       this.setState({
         fileHandle: result
@@ -112,7 +119,15 @@ class EditText extends React.Component {
     })
   }
 
+  handleSubmit(event) {
+    let linesData = processLyrics(this.state.value)
+    this.props.setLinesData(linesData)
+    event.preventDefault();
+  }
 
+  test() {
+    console.log(this.props.handleSubmit)
+  }
   render() {
     return (
       <div>
@@ -125,18 +140,13 @@ class EditText extends React.Component {
           <input type="submit" value="Submit" />
 
         </form>
+        <button onClick={this.preLoad.bind(this)}>Pre Load</button>
         <button onClick={this.load}>Load</button>
         <button onClick={this.save}>Save</button>
         <button onClick={this.saveAs}>Save As...</button>
+        <button onClick={this.test.bind(this)}>test</button>
       </div>
     );
-  }
-}
-
-
-class LyricsEditor extends React.Component {
-  render() {
-    return <EditText className='EditText' />
   }
 }
 
