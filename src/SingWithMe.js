@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import song from './res/bones_in_the_ocean.mp3'
-import { Howl, Howler } from 'howler';
-import { ReactMediaRecorder } from "react-media-recorder";
+import { Howl } from 'howler';
 import { useReactMediaRecorder } from "react-media-recorder";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 /**
@@ -50,7 +49,6 @@ const RecordView = () => {
 /**
  * One line of the lyrics
  * Each line has text, and plays the audio for the line when clicked.
- * TO DO: Add a voice recorder next to the lyrics in each song
  */
 class Line extends React.Component {
   constructor(props) {
@@ -66,6 +64,10 @@ class Line extends React.Component {
    */
   processClick = () => {
     var sound = this.props.sound
+    if (!sound) {
+      toast("No Sound Loaded")
+      return;
+    }
     var section = 'section' + this.props.lineNumber
     sound.play(section)
     setTimeout(() => this.setState({ color: 'black' }), 1000);
@@ -89,35 +91,45 @@ class Line extends React.Component {
   }
 }
 
+var soundSource;
+
 /**
  * The lines of the lyrics.
- * Contains all the lines and the sound state that is shared between the lines.
+ * Contains all the lines and the sound object that is shared between them as a state.
  */
 class Lines extends React.Component {
   constructor(props) {
     super(props)
-    const sprites = generateSprites(this.props.linesData);
-    const sound = new Howl({
-      src: [song],
-      sprite: sprites
-    });
-
     this.state = {
-      sound: sound,
+      sound: null,
     }
 
-    this.makeSound = this.makeSound.bind(this)
+    this.loadSound = this.loadSound.bind(this)
+    this.handleInput = this.handleInput.bind(this)
   }
 
-  makeSound() {
-    const sprites = generateSprites(this.props.linesData);
+  loadSound() {
+    if (!soundSource) {
+      toast("No File Chosen")
+    }
+    const sprites = generateSprites(this.props.linesData)
     const sound = new Howl({
-      src: [song],
+      src: [soundSource],
       sprite: sprites
     });
-    this.setState({
-      sound: sound
-    })
+    this.setState({sound: sound})
+  }
+
+  handleInput(event) {
+    const file = event.target.files[0]
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      soundSource = e.target.result;
+    };
+    reader.readAsDataURL(file)
   }
 
   render() {
@@ -138,8 +150,10 @@ class Lines extends React.Component {
 
     return (
       <div>
-        <button onClick={this.makeSound}>Make Sound</button>
+        <input id="file-upload" type="file" accept=".gif,.jpg,.jpeg,.png" onChange={this.handleInput} />
+        <button onClick={this.loadSound}>Load Sound</button>
         {lines}
+        <ToastContainer />
       </div>
     )
   }
