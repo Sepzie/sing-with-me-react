@@ -5,6 +5,9 @@ import React, { useState } from 'react';
 import BasicTabs from './TabPanel';
 import Lines from './SingWithMe';
 import LyricsEditor from './LyricsEditor';
+import DatabaseView from './DatabaseView';
+
+
 
 
 /**
@@ -12,7 +15,7 @@ import LyricsEditor from './LyricsEditor';
  */
 function App() {
   let [linesData, setLinesData] = useState([]);
-
+  
   function processSubmit(newLinesData) {
     setLinesData(newLinesData)
   }
@@ -21,7 +24,8 @@ function App() {
 
   return (
     <div className="App">
-        <LyricsEditor className="LyricsEditor" setLinesData={setLinesData}/>
+        <LyricsEditor className="LyricsEditor" setLinesData={setLinesData} />
+        <DatabaseView className="DatabaseView" />
         <Lines className="Lines" linesData={linesData} />
       {/* <BasicTabs
         // tab1={<Lines className="Lines" linesData={linesData}/>}
