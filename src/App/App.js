@@ -25,7 +25,7 @@ function App() {
   return (
     <div className="App">
         <LyricsEditor className="LyricsEditor" setLinesData={setLinesData} />
-        <DatabaseView className="DatabaseView" />
+        <DatabaseView className="DatabaseView"  collection="Songs"/>
         <Lines className="Lines" linesData={linesData} />
       {/* <BasicTabs
         // tab1={<Lines className="Lines" linesData={linesData}/>}
