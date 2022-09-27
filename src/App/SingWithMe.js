@@ -10,16 +10,15 @@ import 'react-toastify/dist/ReactToastify.css';
  * Generates Howler sprites for each section of the song based on the lyrics timestamp
  * @returns Howler sprite object
  */
-function generateSprites(syncedLyrics) {
+function generateSprites(syncedLyrics = []) {
   let sprites = {};
   if (syncedLyrics.length !== 0) {
-    for (const [index, line] of syncedLyrics.slice(0, -1).entries()) {
+    syncedLyrics.forEach((line, index) => {
       sprites['section' + index] = [
         line.startTime,
-        syncedLyrics[index + 1].startTime - line.startTime
+        line.duration
       ];
-    }
-    sprites['section' + (syncedLyrics.length - 1)] = [syncedLyrics[syncedLyrics.length - 1].startTime];
+    })
   }
   return sprites;
 }
@@ -34,18 +33,18 @@ const RecordView = () => {
     recording ? stopRecording() : startRecording();
     setRecording(!recording);
   }
-  
+
 
   /* Render */
   let recordButtonClassName = 'record-button';
-  recordButtonClassName +=  recording ? ' recording' : ' not-recording'
+  recordButtonClassName += recording ? ' recording' : ' not-recording'
 
   return (
     <div className='RecordView'>
       {/* <p>{status}</p>  */}
-      <button 
-      className={recordButtonClassName}
-      onClick={processClick}
+      <button
+        className={recordButtonClassName}
+        onClick={processClick}
       >
         {recording ? 'Stop Recording' : 'Start Recording'}
       </button>
@@ -63,37 +62,34 @@ class Line extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      playing: false,
       color: 'black'
     };
   }
 
   /**
    * Handle what happens when a line is clicked
-   * Plays the Howler sprite that corresponds to this line and changes the line color for a second.
+   * Plays the Howler sprite that corresponds to this line.
    */
   processClick = () => {
-    var sound = this.props.sound
-    if (!sound) {
-      toast("No Sound Loaded")
-      return;
-    }
-    // var section = 'section' + this.props.lineNumber
-    // sound.play(section)
     this.props.playSound();
-    setTimeout(() => this.setState({ color: 'black' }), 1000);
+    setTimeout(() => this.setState({ playing: false }), this.props.duration);
     this.setState({
-      color: 'green'
+      playing: true
     });
   }
 
   render() {
+    let soundButtonClass = "sound-sprite-button";
+    if (this.state.playing) {
+      soundButtonClass += " playing"
+    }
     return (
       <div
         className='sing-with-me-line'
       >
         <p
-          className="sound-sprite-button"
-          style={{ color: this.state.color }}
+          className={soundButtonClass}
           onClick={this.processClick}
         >
           {this.props.text}
@@ -130,7 +126,7 @@ class Lines extends React.Component {
       src: [soundSource],
       sprite: sprites
     });
-    this.setState({sound: sound})
+    this.setState({ sound: sound })
   }
 
   handleInput(event) {
@@ -139,7 +135,7 @@ class Lines extends React.Component {
       return;
     }
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       soundSource = e.target.result;
     };
     reader.readAsDataURL(file)
@@ -163,7 +159,7 @@ class Lines extends React.Component {
           text={line.text}
           key={lineNumber}
           playSound={() => this.playSound(lineNumber)}
-          sound={this.state.sound}
+          duration={line.duration}
           lineNumber={lineNumber}
         />
       )

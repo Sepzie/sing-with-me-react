@@ -33,10 +33,9 @@ function processLyrics(rawLyrics = '') {
     const seconds = parseFloat(match.groups.seconds)
     const duration = minutes * 60000 + seconds * 1000
     syncedLyrics[syncedLyrics.length - 1].duration = duration - syncedLyrics[syncedLyrics.length - 1].startTime
-    syncedLyrics.totalDuration = duration
+    syncedLyrics.duration = duration
   }
 
-  console.log(syncedLyrics[syncedLyrics.length -1])
   return syncedLyrics
 }
 

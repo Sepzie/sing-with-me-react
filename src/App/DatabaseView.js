@@ -22,7 +22,8 @@ class DatabaseView extends React.Component {
         await setDoc(doc(db, this.props.collection, songId), {
             title: title,
             artist: artist,
-            syncedLyrics: this.props.syncedLyrics
+            syncedLyrics: this.props.syncedLyrics,
+            duration: this.props.syncedLyrics.duration,
         });
     }
 
