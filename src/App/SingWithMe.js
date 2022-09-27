@@ -10,16 +10,16 @@ import 'react-toastify/dist/ReactToastify.css';
  * Generates Howler sprites for each section of the song based on the lyrics timestamp
  * @returns Howler sprite object
  */
-function generateSprites(linesData) {
+function generateSprites(syncedLyrics) {
   let sprites = {};
-  if (linesData.length !== 0) {
-    for (const [index, line] of linesData.slice(0, -1).entries()) {
+  if (syncedLyrics.length !== 0) {
+    for (const [index, line] of syncedLyrics.slice(0, -1).entries()) {
       sprites['section' + index] = [
         line.startTime,
-        linesData[index + 1].startTime - line.startTime
+        syncedLyrics[index + 1].startTime - line.startTime
       ];
     }
-    sprites['section' + (linesData.length - 1)] = [linesData[linesData.length - 1].startTime];
+    sprites['section' + (syncedLyrics.length - 1)] = [syncedLyrics[syncedLyrics.length - 1].startTime];
   }
   return sprites;
 }
@@ -125,7 +125,7 @@ class Lines extends React.Component {
     if (!soundSource) {
       toast("No File Chosen")
     }
-    const sprites = generateSprites(this.props.linesData)
+    const sprites = generateSprites(this.props.syncedLyrics)
     const sound = new Howl({
       src: [soundSource],
       sprite: sprites
@@ -154,10 +154,10 @@ class Lines extends React.Component {
   }
 
   render() {
-    const linesData = this.props.linesData
+    const syncedLyrics = this.props.syncedLyrics
     let lines = []
 
-    linesData.forEach((line, lineNumber) => {
+    syncedLyrics.forEach((line, lineNumber) => {
       lines.push(
         <Line
           text={line.text}

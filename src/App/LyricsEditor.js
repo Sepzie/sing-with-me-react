@@ -3,26 +3,41 @@ import { getNewFileHandle, writeFile, readFile } from './helper-modules/FileSyst
 
 
 function processLyrics(rawLyrics = '') {
-  const regex = /^\[(?<minutes>0?[0-9]|[1-5][0-9]):(?<seconds>(0?[0-9]|[1-5][0-9])\.[0-9]*)\](?<text>.*)/
-  let linesData = []
+  const timeStampRegex = /^\[(?<minutes>0?[0-9]|[1-5][0-9]):(?<seconds>(0?[0-9]|[1-5][0-9])\.[0-9]*)\](?<text>.*)/
+  const durationRegex = /\[length:(?<minutes>0?[0-9]|[1-5][0-9]):(?<seconds>(0?[0-9]|[1-5][0-9])\.[0-9]*)\]/
+  let syncedLyrics = []
 
   rawLyrics
     .split('\n')
     .forEach((line) => {
-      if (regex.test(line)) {
-        const match = regex.exec(line)
+      if (timeStampRegex.test(line)) {
+        const match = timeStampRegex.exec(line)
         const minutes = parseInt(match.groups.minutes)
         const seconds = parseFloat(match.groups.seconds)
         const startTime = minutes * 60000 + seconds * 1000
         const text = match.groups.text
-        linesData.push({
+        syncedLyrics.push({
           startTime: startTime,
           text: text
         })
       }
     });
 
-  return linesData
+  for (let i = 0; i < syncedLyrics.length - 1; i++) {
+    syncedLyrics[i].duration = syncedLyrics[i + 1].startTime - syncedLyrics[i].startTime
+  }
+
+  if (durationRegex.test(rawLyrics)) {
+    const match = durationRegex.exec(rawLyrics)
+    const minutes = parseInt(match.groups.minutes)
+    const seconds = parseFloat(match.groups.seconds)
+    const duration = minutes * 60000 + seconds * 1000
+    syncedLyrics[syncedLyrics.length - 1].duration = duration - syncedLyrics[syncedLyrics.length - 1].startTime
+    syncedLyrics.totalDuration = duration
+  }
+
+  console.log(syncedLyrics[syncedLyrics.length -1])
+  return syncedLyrics
 }
 
 class LyricsEditor extends React.Component {
@@ -71,8 +86,8 @@ class LyricsEditor extends React.Component {
   }
 
   handleSubmit(event) {
-    let linesData = processLyrics(this.state.value)
-    this.props.setLinesData(linesData)
+    let syncedLyrics = processLyrics(this.state.value)
+    this.props.setSyncedLyrics(syncedLyrics)
     event.preventDefault();
   }
 

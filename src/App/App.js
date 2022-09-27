@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './style_sheets/App.css';
 import React, { useState } from 'react';
 import BasicTabs from './TabPanel';
-import Lines from './SingWithMe';
+import SingWithMe from './SingWithMe';
 import LyricsEditor from './LyricsEditor';
 import DatabaseView from './DatabaseView';
 
@@ -14,19 +14,19 @@ import DatabaseView from './DatabaseView';
  * App
  */
 function App() {
-  let [linesData, setLinesData] = useState([]);
+  let [syncedLyrics, setSyncedLyrics] = useState([]);
 
-  function processSubmit(newLinesData) {
-    setLinesData(newLinesData)
+  function processSubmit(newSyncedLyrics) {
+    setSyncedLyrics(newSyncedLyrics)
   }
 
 
 
   return (
     <div className="App">
-      <LyricsEditor className="LyricsEditor" setLinesData={setLinesData} />
-      <DatabaseView className="DatabaseView" linesData={linesData} collection="songs" />
-      <Lines className="Lines" linesData={linesData} />
+      <LyricsEditor className="LyricsEditor" setSyncedLyrics={setSyncedLyrics} />
+      <DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
+      <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} />
       {/* <BasicTabs
         // tab1={<Lines className="Lines" linesData={linesData}/>}
         // tab2={<LyricsEditor className="LyricsEditor" setLinesData={setLinesData}/>}
