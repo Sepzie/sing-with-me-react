@@ -1,3 +1,4 @@
+import './style_sheets/SingWithMe.css';
 import React, { useState } from 'react';
 import { Howl } from 'howler';
 import { useReactMediaRecorder } from "react-media-recorder";
@@ -29,15 +30,23 @@ const RecordView = () => {
     useReactMediaRecorder({ audio: true });
   const [recording, setRecording] = useState(false);
 
-  function processClick() {
+  const processClick = () => {
     recording ? stopRecording() : startRecording();
     setRecording(!recording);
   }
+  
+
+  /* Render */
+  let recordButtonClassName = 'record-button';
+  recordButtonClassName +=  recording ? ' recording' : ' not-recording'
 
   return (
-    <div>
-      <p>{status}</p>
-      <button onClick={processClick}>
+    <div className='RecordView'>
+      {/* <p>{status}</p>  */}
+      <button 
+      className={recordButtonClassName}
+      onClick={processClick}
+      >
         {recording ? 'Stop Recording' : 'Start Recording'}
       </button>
       <audio src={mediaBlobUrl} controls autoPlay />
@@ -68,8 +77,9 @@ class Line extends React.Component {
       toast("No Sound Loaded")
       return;
     }
-    var section = 'section' + this.props.lineNumber
-    sound.play(section)
+    // var section = 'section' + this.props.lineNumber
+    // sound.play(section)
+    this.props.playSound();
     setTimeout(() => this.setState({ color: 'black' }), 1000);
     this.setState({
       color: 'green'
@@ -78,8 +88,11 @@ class Line extends React.Component {
 
   render() {
     return (
-      <div>
+      <div
+        className='sing-with-me-line'
+      >
         <p
+          className="sound-sprite-button"
           style={{ color: this.state.color }}
           onClick={this.processClick}
         >
@@ -132,6 +145,14 @@ class Lines extends React.Component {
     reader.readAsDataURL(file)
   }
 
+  playSound = (lineNumber) => {
+    if (!this.state.sound) {
+      toast("No Sound Loaded")
+      return;
+    }
+    this.state.sound.play('section' + lineNumber)
+  }
+
   render() {
     const linesData = this.props.linesData
     let lines = []
@@ -141,7 +162,7 @@ class Lines extends React.Component {
         <Line
           text={line.text}
           key={lineNumber}
-          onClick={() => this.state.sound.play('section' + lineNumber)}
+          playSound={() => this.playSound(lineNumber)}
           sound={this.state.sound}
           lineNumber={lineNumber}
         />
@@ -150,7 +171,7 @@ class Lines extends React.Component {
 
     return (
       <div>
-        <input id="file-upload" type="file" accept=".gif,.jpg,.jpeg,.png" onChange={this.handleInput} />
+        <input id="file-upload" type="file" onChange={this.handleInput} />
         <button onClick={this.loadSound}>Load Sound</button>
         {lines}
         <ToastContainer />
