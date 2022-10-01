@@ -6,6 +6,7 @@ import BasicTabs from './TabPanel';
 import SingWithMe from './SingWithMe';
 import LyricsEditor from './LyricsEditor';
 import DatabaseView from './DatabaseView';
+import SoundWaveView from './helper-modules/SoundWaveView';
 
 
 
@@ -24,13 +25,24 @@ function App() {
 
   return (
     <div className="App">
-      <LyricsEditor className="LyricsEditor" setSyncedLyrics={setSyncedLyrics} />
-      <DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
-      <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} />
+      {/* <div>
+        <LyricsEditor className="LyricsEditor" setSyncedLyrics={setSyncedLyrics} />
+        <DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
+        <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} />
+      </div> */}
+      <SoundWaveView />
       {/* <BasicTabs
-        // tab1={<Lines className="Lines" linesData={linesData}/>}
-        // tab2={<LyricsEditor className="LyricsEditor" setLinesData={setLinesData}/>}
+        tab1={
+          <div>
+            <LyricsEditor className="LyricsEditor" setSyncedLyrics={setSyncedLyrics} />
+            <DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
+            <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} />
+          </div>
+        }
+        tab2={<SoundWaveView />}
       /> */}
+
+
     </div>
   );
 }

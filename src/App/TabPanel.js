@@ -58,10 +58,10 @@ export default function BasicTabs(props) {
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                <Lines className="Lines" linesData={linesData} />
+                {tab1}
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <LyricsEditor className="LyricsEditor" setLinesData={setLinesData} />
+                {tab2}
             </TabPanel>
             <TabPanel value={value} index={2}>
                 Item Three
