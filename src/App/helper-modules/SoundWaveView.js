@@ -12,6 +12,7 @@ import "../style_sheets/SoundWaveView.css";
 import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
+import soundRef from "../res/bones_in_the_ocean.mp3"
 
 const Buttons = styled.div`
     display: inline-block;
@@ -147,9 +148,9 @@ function SoundWaveView() {
             }
 
             wavesurferRef.current = waveSurfer;
-
+            // debugger
             if (wavesurferRef.current) {
-                wavesurferRef.current.load("/bones-in-the-ocean.mp3");
+                wavesurferRef.current.load(soundRef);
 
                 wavesurferRef.current.on("region-created", regionCreatedHandler);
 
