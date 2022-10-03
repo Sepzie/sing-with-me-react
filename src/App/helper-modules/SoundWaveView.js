@@ -118,6 +118,13 @@ function SoundWaveView() {
         }
     ]);
 
+    const renderCountRef = useRef(0);
+
+    useEffect(() => {
+        renderCountRef.current = renderCountRef.current + 1
+    }, [renderCountRef])
+
+
     // use regions ref to pass it inside useCallback
     // so it will use always the most fresh version of regions list
     const regionsRef = useRef(regions);
@@ -310,7 +317,7 @@ function SoundWaveView() {
                 <Button onClick={removeLastMarker}>Remove last marker</Button>
                 <Button onClick={shuffleLastMarker}>Shuffle last marker</Button>
                 <Button onClick={toggleTimeline}>Toggle timeline</Button>
-                <Button onClick={handleWSMount}>Mount</Button>
+                <Button onClick={() => console.log(markers)}>TEST</Button>
 
             </Buttons>
         </div>

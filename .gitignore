@@ -23,3 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 src/App/res/*
 src/App/firebaseAPI.js
+yarn.lock
