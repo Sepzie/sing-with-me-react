@@ -65,10 +65,10 @@ function SoundWaveView() {
 
     const plugins = useMemo(() => {
         return [
-            {
-                plugin: RegionsPlugin,
-                options: { dragSelection: true }
-            },
+            //     { regions commented out as it was cluttering the view
+            //         plugin: RegionsPlugin,
+            //         options: { dragSelection: true }
+            //     },
             timelineVis && {
                 plugin: TimelinePlugin,
                 options: {
@@ -272,33 +272,33 @@ function SoundWaveView() {
     }, []);
 
     return (
-        <div className="App">
+        <div className="SoundWaveView">
+            <h1>Render Count: {renderCountRef.current}</h1>
             <WaveSurfer plugins={plugins} onMount={handleWSMount}>
                 <WaveForm id="waveform" cursorColor="transparent">
-                    {regions.map((regionProps) => (
+                    {/* {regions.map((regionProps) => ( Regions are disabled as they were cluttering the view
                         <Region
                             onUpdateEnd={handleRegionUpdate}
                             key={regionProps.id}
                             {...regionProps}
                         />
+                    ))} */}
+                    {markers.map((marker, index) => (
+                        <Marker
+                            className="Marker"
+                            key={index}
+                            {...marker}
+                            onClick={(...args) => {
+                                console.log("onClick", ...args);
+                            }}
+                            onDrag={(...args) => {
+                                console.log("onDrag", ...args);
+                            }}
+                            onDrop={(...args) => {
+                                console.log("onDrop", ...args);
+                            }}
+                        />
                     ))}
-                    {markers.map((marker, index) => {
-                        return (
-                            <Marker
-                                key={index}
-                                {...marker}
-                                onClick={(...args) => {
-                                    console.log("onClick", ...args);
-                                }}
-                                onDrag={(...args) => {
-                                    console.log("onDrag", ...args);
-                                }}
-                                onDrop={(...args) => {
-                                    console.log("onDrop", ...args);
-                                }}
-                            />
-                        );
-                    })}
                 </WaveForm>
                 <div id="timeline" />
             </WaveSurfer>
