@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import SoundWaveView from "./helper-modules/SoundWaveView";
-import TextAreaWithLineNumber from 'text-area-with-line-number';
+import TextAreaWithLineNumber from './helper-modules/TAWLN/index';
 import { duration } from "@mui/material";
 
 export default function SoundSyncActivity(props) {
