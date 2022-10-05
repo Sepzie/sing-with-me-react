@@ -66,6 +66,9 @@ const TextAreaWithLineNumber = (props) => {
   color: ${lineNumberTextColor};
   text-align: center;
 }
+.tawln-line:first-of-type::before {
+  counter-set: line;
+}
 .tawln-line::before {
   counter-increment: line;
   content: counter(line);
