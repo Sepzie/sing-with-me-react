@@ -5,11 +5,10 @@ import React, {
     useState,
     useMemo
 } from "react";
-import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { WaveSurfer, WaveForm, Region, Marker } from "wavesurfer-react";
 import "../style_sheets/SoundWaveView.css";
-import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
+// import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
 import soundRef from "../res/bones_in_the_ocean.mp3"
@@ -160,9 +159,6 @@ function SoundWaveView(props) {
             if (wavesurferRef.current) {
                 wavesurferRef.current.load(soundRef);
 
-                
-                // setSoundDuration(wavesurferRef.current.getDuration)
-
                 wavesurferRef.current.on("region-created", regionCreatedHandler);
 
                 wavesurferRef.current.on("ready", () => {
@@ -188,7 +184,7 @@ function SoundWaveView(props) {
                 }
             }
         },
-        [regionCreatedHandler]
+        [regionCreatedHandler, setSoundDuration]
     );
 
     const generateRegion = useCallback(() => {
@@ -242,7 +238,7 @@ function SoundWaveView(props) {
                 color: `rgba(${r}, ${g}, ${b}, 0.5)`
             }
         ]);
-    }, [markers, wavesurferRef]);
+    }, [markers, setMarkers, wavesurferRef]);
 
     const removeLastRegion = useCallback(() => {
         let nextRegions = [...regions];
@@ -257,7 +253,7 @@ function SoundWaveView(props) {
         nextMarkers.pop();
 
         setMarkers(nextMarkers);
-    }, [markers]);
+    }, [markers, setMarkers]);
 
     const shuffleLastMarker = useCallback(() => {
         setMarkers((prev) => {
@@ -280,7 +276,7 @@ function SoundWaveView(props) {
 
             return next;
         });
-    }, []);
+    }, [setMarkers]);
 
     const play = useCallback(() => {
         wavesurferRef.current.playPause();
