@@ -14,6 +14,10 @@ import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
 import soundRef from "../res/bones_in_the_ocean.mp3"
 
+const Timeline = styled.div`
+    border: 2px black solid;
+`
+
 const Buttons = styled.div`
     display: inline-block;
   `;
@@ -45,23 +49,13 @@ function generateTwoNumsWithDistance(distance, min, max) {
     return generateTwoNumsWithDistance(distance, min, max);
 }
 
-function SoundWaveView() {
-    const [timelineVis, setTimelineVis] = useState(true);
+function SoundWaveView(props) {
+    const { setSoundDuration } = props
+    const { markers, setMarkers } = props
 
-    const [markers, setMarkers] = useState([
-        {
-            time: 5.5,
-            label: "V1",
-            color: "#ff990a",
-            draggable: true
-        },
-        {
-            time: 10,
-            label: "V2",
-            color: "#00ffcc",
-            position: "top"
-        }
-    ]);
+    const [timelineVis, setTimelineVis] = useState(true);
+    
+
 
     const plugins = useMemo(() => {
         return [
@@ -148,21 +142,32 @@ function SoundWaveView() {
     );
 
     const wavesurferRef = useRef();
+
+    /**
+     * Initialize wavesurferRef and subscribe to event listeners
+     */
     const handleWSMount = useCallback(
+        // An instance of wavesurfer is passed by the Wavesurfer react component
         (waveSurfer) => {
             if (waveSurfer.markers) {
-                waveSurfer.clearMarkers();  
+                waveSurfer.clearMarkers();
             }
 
+            // Initialize wavesurferRef
             wavesurferRef.current = waveSurfer;
-            // debugger
+
+            // Subscribe event listeners
             if (wavesurferRef.current) {
                 wavesurferRef.current.load(soundRef);
+
+                
+                // setSoundDuration(wavesurferRef.current.getDuration)
 
                 wavesurferRef.current.on("region-created", regionCreatedHandler);
 
                 wavesurferRef.current.on("ready", () => {
                     console.log("WaveSurfer is ready");
+                    setSoundDuration(wavesurferRef.current.getDuration())
                 });
 
                 wavesurferRef.current.on("region-removed", (region) => {
@@ -172,6 +177,11 @@ function SoundWaveView() {
                 wavesurferRef.current.on("loading", (data) => {
                     console.log("loading --> ", data);
                 });
+
+                wavesurferRef.current.on("marker-click", (...args) => {
+                    console.log("marker-click", ...args);
+                });
+
 
                 if (window) {
                     window.surferidze = wavesurferRef.current;
@@ -206,6 +216,9 @@ function SoundWaveView() {
             }
         ]);
     }, [regions, wavesurferRef]);
+
+
+
     const generateMarker = useCallback(() => {
         if (!wavesurferRef.current) return;
         const minTimestampInSeconds = 0;
@@ -273,6 +286,28 @@ function SoundWaveView() {
         wavesurferRef.current.playPause();
     }, []);
 
+    const handleTimelineClick = useCallback((e) => {
+        // e = Mouse click event.
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left; //x position within the element.
+        const relativePosition = x / rect.width
+        const duration = wavesurferRef.current.getDuration()
+        const position = duration * relativePosition;
+        const r = generateNum(0, 255);
+        const g = generateNum(0, 255);
+        const b = generateNum(0, 255);
+
+        setMarkers([
+            ...markers,
+            {
+                label: `timestamp-${markers.length + 1}`,
+                time: position,
+                color: `rgba(${r}, ${g}, ${b}, 0.5)`,
+                draggable: true
+            }
+        ])
+    }, [markers]);
+
     const handleRegionUpdate = useCallback((region, smth) => {
         console.log("region-update-end --> region:", region);
         console.log(smth);
@@ -281,8 +316,8 @@ function SoundWaveView() {
     return (
         <div className="SoundWaveView">
             <h1>Render Count: {renderCountRef.current}</h1>
-            <WaveSurfer plugins={plugins} onMount={handleWSMount}>
-                <WaveForm id="waveform" cursorColor="transparent">
+            <WaveSurfer plugins={plugins} onMount={handleWSMount} >
+                <WaveForm id="waveform" cursorColor="transparent" >
                     {/* {regions.map((regionProps) => ( Regions are disabled as they were cluttering the view
                         <Region
                             onUpdateEnd={handleRegionUpdate}
@@ -301,13 +336,17 @@ function SoundWaveView() {
                             onDrag={(...args) => {
                                 console.log("onDrag", ...args);
                             }}
-                            onDrop={(...args) => {
-                                console.log("onDrop", ...args);
+                            onDrop={(newMarker, event) => {
+                                console.log("onDrop", newMarker, event);
+                                const index = markers.findIndex(marker => marker.label === newMarker.label);
+                                let nextMarkers = [...markers]
+                                nextMarkers[index].time = newMarker.time
+                                setMarkers(nextMarkers)
                             }}
                         />
                     ))}
                 </WaveForm>
-                <div id="timeline" />
+                <Timeline id="timeline" onClick={handleTimelineClick} />
             </WaveSurfer>
             <Buttons>
                 <Button onClick={generateRegion}>Generate region</Button>

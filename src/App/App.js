@@ -7,7 +7,7 @@ import SingWithMe from './SingWithMe';
 import LyricsEditor from './LyricsEditor';
 import DatabaseView from './DatabaseView';
 import SoundWaveView from './helper-modules/SoundWaveView';
-
+import SoundSyncActivity from './SoundSyncActivity';
 
 
 
@@ -31,6 +31,8 @@ function App() {
         <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} />
       </div> */}
       <SoundWaveView />
+      <SoundSyncActivity />
+      <SoundSyncActivity className="SoundSyncActivity" setSyncedLyrics={setSyncedLyrics} />
       {/* <BasicTabs
         tab1={
           <div>

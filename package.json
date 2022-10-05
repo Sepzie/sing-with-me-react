@@ -25,6 +25,7 @@
     "react-toastify": "^9.0.8",
     "styled": "^1.0.0",
     "styled-components": "^5.3.6",
+    "text-area-with-line-number": "^1.1.0",
     "uuid": "^9.0.0",
     "wavesurfer-react": "^2.2.2",
     "wavesurfer.js": "^6.2.0",
