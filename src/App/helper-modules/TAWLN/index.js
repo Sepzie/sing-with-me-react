@@ -13,7 +13,7 @@ const TextAreaWithLineNumber = (props) => {
     scrollbarWidth = "6px",
     scrollbarTrackColor = "transparent",
     srollbarThumbColor = "#888",
-    onChange = () => {},
+    onChange = () => { },
     value = undefined,
     placeholder = "input your text here",
     textAreaFontFamily = "",
@@ -107,9 +107,7 @@ display:flex;
   padding-bottom: 0;
   line-height:2rem;
 }
-
-
-      `;
+`;
 
   useEffect(() => {
     TLN.append_line_numbers("text-area-with-line-number");

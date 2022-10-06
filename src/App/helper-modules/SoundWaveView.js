@@ -11,7 +11,6 @@ import "../style_sheets/SoundWaveView.css";
 // import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
-import soundRef from "../res/bones_in_the_ocean.mp3"
 
 const Timeline = styled.div`
     border: 2px black solid;
@@ -51,9 +50,10 @@ function generateTwoNumsWithDistance(distance, min, max) {
 function SoundWaveView(props) {
     const { setSoundDuration } = props
     const { markers, setMarkers } = props
+    const { soundSourceRef } = props
 
     const [timelineVis, setTimelineVis] = useState(true);
-    
+
 
 
     const plugins = useMemo(() => {
@@ -157,7 +157,7 @@ function SoundWaveView(props) {
 
             // Subscribe event listeners
             if (wavesurferRef.current) {
-                wavesurferRef.current.load(soundRef);
+                wavesurferRef.current.load(soundSourceRef.current);
 
                 wavesurferRef.current.on("region-created", regionCreatedHandler);
 
@@ -345,14 +345,14 @@ function SoundWaveView(props) {
                 <Timeline id="timeline" onClick={handleTimelineClick} />
             </WaveSurfer>
             <Buttons>
-                <Button onClick={generateRegion}>Generate region</Button>
-                <Button onClick={generateMarker}>Generte Marker</Button>
+                {/* <Button onClick={generateRegion}>Generate region</Button> */}
+                {/* <Button onClick={generateMarker}>Generte Marker</Button> */}
                 <Button onClick={play}>Play / Pause</Button>
-                <Button onClick={removeLastRegion}>Remove last region</Button>
+                {/* <Button onClick={removeLastRegion}>Remove last region</Button> */}
                 <Button onClick={removeLastMarker}>Remove last marker</Button>
-                <Button onClick={shuffleLastMarker}>Shuffle last marker</Button>
-                <Button onClick={toggleTimeline}>Toggle timeline</Button>
-                <Button onClick={() => console.log(markers)}>TEST</Button>
+                {/* <Button onClick={shuffleLastMarker}>Shuffle last marker</Button> */}
+                {/* <Button onClick={toggleTimeline}>Toggle timeline</Button> */}
+                {/* <Button onClick={() => console.log(markers)}>TEST</Button> */}
 
             </Buttons>
         </div>

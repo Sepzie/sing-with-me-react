@@ -4,11 +4,13 @@ import TextAreaWithLineNumber from './helper-modules/TAWLN/index';
 import { duration } from "@mui/material";
 
 export default function SoundSyncActivity(props) {
-    const {setSyncedLyrics} = props
+    const { setSyncedLyrics } = props
+    const { soundSourceRef } = props
     const [markers, setMarkers] = useState([]);
     const [text, setText] = useState("");
     const [soundDuration, setSoundDuration] = useState(0)
-    
+    const [soundWaveView, setSoundWaveView] = useState(null)
+
 
     const handleTextUpdate = useCallback((event) => {
         setText(event.target.value)
@@ -20,7 +22,10 @@ export default function SoundSyncActivity(props) {
         const sections = []
         const duration = soundDuration
 
-        sections[0] = { startTime: 0, text: lines[0] }
+        sections[0] = {
+            startTime: 0,
+            text: lines[0] || "..."
+        }
 
         for (let i = 1; i < numberOfSections; i++) {
             const marker = markers.find(marker => marker.label === "timestamp-" + i)
@@ -29,7 +34,7 @@ export default function SoundSyncActivity(props) {
 
             sections[i] = {
                 startTime: startTime ? startTime : 0,
-                text: text ? text : "..."
+                text: text || "..."
             }
         }
 
@@ -50,17 +55,26 @@ export default function SoundSyncActivity(props) {
             sections[i].duration = duration
         }
 
-        console.log(duration)
-        console.log("sections: ", sections)
-    }, [text, markers, soundDuration])
+        setSyncedLyrics(sections)
+    }, [text, markers, soundDuration, setSyncedLyrics])
+
+    const loadSoundWaveView = () => {
+        if (soundSourceRef.current) {
+            setSoundWaveView(
+                <SoundWaveView
+                    markers={markers}
+                    setMarkers={setMarkers}
+                    setSoundDuration={setSoundDuration}
+                    soundSourceRef={soundSourceRef}
+                />
+            )
+        }
+    }
 
     return (
         <div className="SoundSyncActivity">
-            <SoundWaveView
-                markers={markers}
-                setMarkers={useCallback(nextMarkers => setMarkers(nextMarkers), [setMarkers])}
-                setSoundDuration={useCallback(duration => setSoundDuration(duration), [setSoundDuration])}
-            />
+            <button onClick={loadSoundWaveView}>Load Sound Editor</button>
+            {soundWaveView}
             <TextAreaWithLineNumber onChange={handleTextUpdate} />
             <button onClick={handleSubmit}>Submit</button>
         </div>

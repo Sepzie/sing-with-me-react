@@ -15,7 +15,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-, rootElement);
+  , rootElement);
 
 /** root.render method is commented out as it brakes the wavesurfer react project that is used by this project. */
 // const root = ReactDOM.createRoot(document.getElementById('root'));

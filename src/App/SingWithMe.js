@@ -100,8 +100,6 @@ class Line extends React.Component {
   }
 }
 
-var soundSource;
-
 /**
  * The lines of the lyrics.
  * Contains all the lines and the sound object that is shared between them as a state.
@@ -114,31 +112,18 @@ class Lines extends React.Component {
     }
 
     this.loadSound = this.loadSound.bind(this)
-    this.handleInput = this.handleInput.bind(this)
   }
 
   loadSound() {
-    if (!soundSource) {
+    if (this.props.soundSourceRef.current) {
       toast("No File Chosen")
     }
     const sprites = generateSprites(this.props.syncedLyrics)
     const sound = new Howl({
-      src: [soundSource],
+      src: [this.props.soundSource],
       sprite: sprites
     });
     this.setState({ sound: sound })
-  }
-
-  handleInput(event) {
-    const file = event.target.files[0]
-    if (!file) {
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      soundSource = e.target.result;
-    };
-    reader.readAsDataURL(file)
   }
 
   playSound = (lineNumber) => {
@@ -167,7 +152,6 @@ class Lines extends React.Component {
 
     return (
       <div>
-        <input id="file-upload" type="file" onChange={this.handleInput} />
         <button onClick={this.loadSound}>Load Sound</button>
         {lines}
         <ToastContainer />
