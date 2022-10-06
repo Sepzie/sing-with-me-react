@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import SoundWaveView from "./helper-modules/SoundWaveView";
 import TextAreaWithLineNumber from './helper-modules/TAWLN/index';
 import { duration } from "@mui/material";
@@ -9,7 +9,8 @@ export default function SoundSyncActivity(props) {
     const [markers, setMarkers] = useState([]);
     const [text, setText] = useState("");
     const [soundDuration, setSoundDuration] = useState(0)
-    const [soundWaveView, setSoundWaveView] = useState(null)
+    const soundWaveView = useRef(null)
+    const [, updateState] = useState()
 
 
     const handleTextUpdate = useCallback((event) => {
@@ -20,7 +21,6 @@ export default function SoundSyncActivity(props) {
         const lines = text.split("\n")
         const numberOfSections = Math.max(lines.length, markers.length + 1)
         const sections = []
-        const duration = soundDuration
 
         sections[0] = {
             startTime: 0,
@@ -55,26 +55,39 @@ export default function SoundSyncActivity(props) {
             sections[i].duration = duration
         }
 
+        // convert to miliseconds
+        sections.forEach(section=>{
+            section.startTime = Math.round(section.startTime * 1000) 
+            section.duration = Math.round(section.duration * 1000)
+        })
+
         setSyncedLyrics(sections)
     }, [text, markers, soundDuration, setSyncedLyrics])
 
-    const loadSoundWaveView = () => {
-        if (soundSourceRef.current) {
-            setSoundWaveView(
-                <SoundWaveView
-                    markers={markers}
-                    setMarkers={setMarkers}
-                    setSoundDuration={setSoundDuration}
-                    soundSourceRef={soundSourceRef}
-                />
-            )
-        }
+    const SwvComponent = (
+        <SoundWaveView
+            markers={markers}
+            setMarkers={useCallback(nextMarkers => setMarkers(nextMarkers), [setMarkers])}
+            setSoundDuration={useCallback(duration => setSoundDuration(duration), [setSoundDuration])}
+            soundSourceRef={soundSourceRef}
+        />
+    )
+
+    const LoadSoundWaveView = () => {
+        updateState(s=>s+1)
     }
 
     return (
         <div className="SoundSyncActivity">
-            <button onClick={loadSoundWaveView}>Load Sound Editor</button>
-            {soundWaveView}
+            <button onClick={LoadSoundWaveView}>Load Sound Editor</button>
+            {soundSourceRef.current && SwvComponent}
+            {/* <LoadSoundWaveView /> */}
+            {/* <SoundWaveView
+            markers={markers}
+            setMarkers={useCallback(nextMarkers => setMarkers(nextMarkers), [setMarkers])}
+            setSoundDuration={useCallback(duration => setSoundDuration(duration), [setSoundDuration])}
+            soundSourceRef={soundSourceRef}
+        /> */}
             <TextAreaWithLineNumber onChange={handleTextUpdate} />
             <button onClick={handleSubmit}>Submit</button>
         </div>

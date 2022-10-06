@@ -11,7 +11,7 @@ import "../style_sheets/SoundWaveView.css";
 // import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
-
+import soundRef from "../res/bones_in_the_ocean.mp3"
 const Timeline = styled.div`
     border: 2px black solid;
 `
@@ -157,7 +157,10 @@ function SoundWaveView(props) {
 
             // Subscribe event listeners
             if (wavesurferRef.current) {
+
                 wavesurferRef.current.load(soundSourceRef.current);
+                // wavesurferRef.current.load(soundRef);
+                
 
                 wavesurferRef.current.on("region-created", regionCreatedHandler);
 
@@ -281,9 +284,14 @@ function SoundWaveView(props) {
     const play = useCallback(() => {
         wavesurferRef.current.playPause();
     }, []);
+    
+    const playFromMarker = useCallback(() => {
+        console.log(markers)
+        const start = markers[markers.length - 1].time
+        wavesurferRef.current.play(start);
+    }, [markers]);
 
     const handleTimelineClick = useCallback((e) => {
-        // e = Mouse click event.
         const rect = e.target.getBoundingClientRect();
         const x = e.clientX - rect.left; //x position within the element.
         const relativePosition = x / rect.width
@@ -293,16 +301,17 @@ function SoundWaveView(props) {
         const g = generateNum(0, 255);
         const b = generateNum(0, 255);
 
-        setMarkers([
-            ...markers,
+        setMarkers((current)=>{
+            return [
+            ...current,
             {
                 label: `timestamp-${markers.length + 1}`,
                 time: position,
                 color: `rgba(${r}, ${g}, ${b}, 0.5)`,
                 draggable: true
             }
-        ])
-    }, [markers]);
+        ]})
+    });
 
     const handleRegionUpdate = useCallback((region, smth) => {
         console.log("region-update-end --> region:", region);
@@ -348,6 +357,7 @@ function SoundWaveView(props) {
                 {/* <Button onClick={generateRegion}>Generate region</Button> */}
                 {/* <Button onClick={generateMarker}>Generte Marker</Button> */}
                 <Button onClick={play}>Play / Pause</Button>
+                <Button onClick={playFromMarker}>Play last marker</Button>
                 {/* <Button onClick={removeLastRegion}>Remove last region</Button> */}
                 <Button onClick={removeLastMarker}>Remove last marker</Button>
                 {/* <Button onClick={shuffleLastMarker}>Shuffle last marker</Button> */}

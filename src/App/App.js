@@ -14,7 +14,7 @@ import SoundSyncActivity from './SoundSyncActivity';
  * App
  */
 function App() {
-  const [,forceUpdate] = useState()
+  const [, forceUpdate] = useState()
   const [syncedLyrics, setSyncedLyrics] = useState([]);
   const soundSourceRef = useRef(null);
 
@@ -32,7 +32,7 @@ function App() {
     reader.readAsDataURL(file)
   })
 
-    
+
 
   return (
     <div className="App">
@@ -44,16 +44,24 @@ function App() {
       {/* <SoundSyncActivity className="SoundSyncActivity" setSyncedLyrics={setSyncedLyrics} />
       <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} /> */}
 
-      <BasicTabs
+      <div>
+        <input id="file-upload" type="file" onChange={handleInput} />
+        <SoundSyncActivity className="SoundSyncActivity" setSyncedLyrics={setSyncedLyrics} soundSourceRef={soundSourceRef} />
+        <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} soundSourceRef={soundSourceRef} />
+        <DatabaseView  className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
+      </div>
+
+      {/* <BasicTabs
         tab1={
           <div>
             <input id="file-upload" type="file" onChange={handleInput} />
             <SoundSyncActivity className="SoundSyncActivity" setSyncedLyrics={setSyncedLyrics} soundSourceRef={soundSourceRef} />
             <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} soundSourceRef={soundSourceRef} />
+            <DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
           </div>
         }
-        tab2={<DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />}
-      />
+        tab2={<DatabaseView className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />} */}
+      {/* /> */}
 
 
     </div>

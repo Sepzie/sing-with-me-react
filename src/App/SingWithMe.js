@@ -4,6 +4,7 @@ import { Howl } from 'howler';
 import { useReactMediaRecorder } from "react-media-recorder";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import soundRef from "./res/bones_in_the_ocean.mp3"
 
 
 /**
@@ -115,14 +116,17 @@ class Lines extends React.Component {
   }
 
   loadSound() {
-    if (this.props.soundSourceRef.current) {
+    const source = this.props.soundSourceRef.current
+    if (!source) {
       toast("No File Chosen")
     }
+    console.log(this.props.soundSourceRef.current)
     const sprites = generateSprites(this.props.syncedLyrics)
     const sound = new Howl({
-      src: [this.props.soundSource],
+      src: [source],
       sprite: sprites
     });
+    console.log(sound)
     this.setState({ sound: sound })
   }
 

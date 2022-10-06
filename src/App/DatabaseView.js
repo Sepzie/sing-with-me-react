@@ -51,7 +51,7 @@ class DatabaseView extends React.Component {
         })
 
         return (
-            <div>
+            <div style={{border: "2px solid black"}}>
                 <ul>{list}</ul>
                 <FormDialog handleUpload={this.writeSong} />
                 <button onClick={this.fetchSongs}>get data</button>
