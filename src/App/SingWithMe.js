@@ -4,7 +4,7 @@ import { Howl } from 'howler';
 import { useReactMediaRecorder } from "react-media-recorder";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import soundRef from "./res/bones_in_the_ocean.mp3"
+import soundRef from "./res/song.mp3"
 
 
 /**
@@ -166,4 +166,3 @@ class Lines extends React.Component {
 
 
 export default Lines
-

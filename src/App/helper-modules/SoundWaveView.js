@@ -11,7 +11,7 @@ import "../style_sheets/SoundWaveView.css";
 // import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
-import soundRef from "../res/bones_in_the_ocean.mp3"
+import soundRef from "../res/song.mp3"
 const Timeline = styled.div`
     border: 2px black solid;
 `

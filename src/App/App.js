@@ -5,7 +5,6 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import BasicTabs from './TabPanel';
 import SingWithMe from './SingWithMe';
 import LyricsEditor from './LyricsEditor';
-import DatabaseView from './DatabaseView';
 import SoundWaveView from './helper-modules/SoundWaveView';
 import SoundSyncActivity from './SoundSyncActivity';
 
@@ -48,7 +47,6 @@ function App() {
         <input id="file-upload" type="file" onChange={handleInput} />
         <SoundSyncActivity className="SoundSyncActivity" setSyncedLyrics={setSyncedLyrics} soundSourceRef={soundSourceRef} />
         <SingWithMe className="SingWithMe" syncedLyrics={syncedLyrics} soundSourceRef={soundSourceRef} />
-        <DatabaseView  className="DatabaseView" syncedLyrics={syncedLyrics} collection="songs" />
       </div>
 
       {/* <BasicTabs
