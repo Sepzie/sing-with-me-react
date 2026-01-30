@@ -4,7 +4,6 @@ import { Howl } from 'howler';
 import { useReactMediaRecorder } from "react-media-recorder";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import soundRef from "./res/song.mp3"
 
 
 /**

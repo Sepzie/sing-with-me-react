@@ -11,7 +11,6 @@ import "../style_sheets/SoundWaveView.css";
 // import RegionsPlugin from "wavesurfer.js/dist/plugin/wavesurfer.regions.min";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.min";
 import MarkersPlugin from "wavesurfer.js/src/plugin/markers";
-import soundRef from "../res/song.mp3"
 const Timeline = styled.div`
     border: 2px black solid;
 `
@@ -320,7 +319,6 @@ function SoundWaveView(props) {
 
     return (
         <div className="SoundWaveView">
-            <h1>Render Count: {renderCountRef.current}</h1>
             <WaveSurfer plugins={plugins} onMount={handleWSMount} >
                 <WaveForm id="waveform" cursorColor="transparent" >
                     {/* {regions.map((regionProps) => ( Regions are disabled as they were cluttering the view

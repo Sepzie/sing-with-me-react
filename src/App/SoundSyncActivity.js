@@ -80,7 +80,18 @@ export default function SoundSyncActivity(props) {
     return (
         <div className="SoundSyncActivity">
             <button onClick={LoadSoundWaveView}>Load Sound Editor</button>
+            <span
+                title="Upload an audio file, load the sound editor, click the band to add segments, then match each lyric line below. Submit to generate practice buttons."
+                style={{ marginLeft: "12px", cursor: "help" }}
+            >
+                ❓
+            </span>
             {soundSourceRef.current && SwvComponent}
+            {soundSourceRef.current ? (
+                <p>Click the band above to add a segment. Each segment lines up with the corresponding lyric line below.</p>
+            ) : (
+                <p>Please choose an audio file and press Load Sound Editor.</p>
+            )}
             {/* <LoadSoundWaveView /> */}
             {/* <SoundWaveView
             markers={markers}
